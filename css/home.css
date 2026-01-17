@@ -1,0 +1,7 @@
+div {
+	display: flexbox;
+	align-self: center;
+	align-content: center;
+	align-items: center;
+	text-align: center;
+}
