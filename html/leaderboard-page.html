@@ -7,56 +7,79 @@
     <link rel="stylesheet" href="../css/leaderboard-stylesheet.css" />
   </head>
   <body>
+    <!-- Navigation Bar -->
     <nav>
-      <span>
-        <img src="" alt="game logo" />
-        <span>game name</span>
-      </span>
-      <span>
+      <div class="logo-section">
+        <img  src="../assets/images/game-icon-gameBoardScreen-alt.jpg" alt="game logo" />
+        <h2> Snake <span class="highlight">&</span> Ladders</h2>
+      </div>
+      <div class="nav-buttons">
         <button>Home</button>
         <button>Instructions</button>
-      </span>
+      </div>
     </nav>
+
+    <!-- Main Content -->
     <main>
-      <span>
-        <img src="" alt="trophy icon" />
+      <div class="small-header">
+        <img src="../assets/images/trophy-icon.png" alt="trophy icon" />
         <span>Hall of fame</span>
-      </span>
+    
+      </div>
       <h1>Champions</h1>
       <p>The runner ups</p>
-      <div>
+      
         <table>
           <thead>
             <tr>
-              <th>Rank</th>
-              <th>Name</th>
-              <th>Score</th>
+              <th id="rank">Rank</th>
+              <th>Player</th>
+              <th id="score">Score</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr >
               <td>1</td>
-              <td>andrew</td>
+              <td class="player-info">
+                <img src="../assets/images/Player1-Icon.jpg" alt="player1">
+                andrew
+              </td>
               <td>100</td>
             </tr>
             <tr>
-              <td>1</td>
-              <td>andrew</td>
+              <td>2</td>
+              <td class="player-info">
+                <img src="../assets/images/Player1-Icon.jpg" alt="player1">
+                zeyad
+              </td>
               <td>100</td>
             </tr>
             <tr>
-              <td>1</td>
-              <td>andrew</td>
+              <td>3</td>
+             <td class="player-info">
+                <img src="../assets/images/Player1-Icon.jpg" alt="player1">
+                abdelhaq
+              </td>
+              <td>100</td>
+            </tr>
+             <tr>
+              <td>4</td>
+              <td class="player-info">
+                <img src="../assets/images/Player1-Icon.jpg" alt="player1">
+                Hanin
+              </td>
               <td>100</td>
             </tr>
           </tbody>
         </table>
-        <button>Play again</button>
-      </div>
+        <div class="play-again-button">
+           <button>Play again</button>
+        </div>
+       
     </main>
     <footer>
       <p>
-        made with love by Mohamed abdel el haq , Hanin Ahmed, Zeiad Hesham
+        made with ❤️ by Mohamed abdel el haq , Hanin Ahmed, Zeiad Hesham
         ,Andrew Emad
       </p>
     </footer>
