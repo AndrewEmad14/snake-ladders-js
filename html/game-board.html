@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- TODO:!!! remove direct style tags -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +12,10 @@
     <script type="module" src="../js/pages/game-board.js"></script>
 
     <!-- add templates -->
+    <template id="playerMarker">
+        <img src="../assets/images/game-icon-gameBoardScreen.jpg" alt="" style="position: absolute; width: 60px; height: 60px;">
+    </template>
+
     <template id="gameLogPlayers">
         <li class="gameLogPlayers">Player 2 rolled a 0 and moved to Square 0</li>
     </template>
@@ -57,8 +63,9 @@
 
 
         <div class="left-side-bar">
-            <div class="gameBoard">
-                        <img src="../assets/images/9ed2d2966be0c2501bbf74c835e0757d.jpg" alt="Game Board Image">
+            <div class="gameBoard" style="position: absolute;">
+                <div id="playerMarkerContainer"></div>
+                <img src="../assets/images/preset-snake-board.jpg" alt="Game Board Image" style="width: 800px; height: 800px;">
             </div>      
         </div>
 

@@ -35,10 +35,12 @@ const activeTurnDisplay = document.getElementById("activeTurnPlayerName");
 // Containers
 const leaderboardContainer = document.getElementById("playersLeaderboard");
 const logContainer = document.getElementById("gameLogPlayersList");
+const playerMarkerContainer = document.getElementById("playerMarkerContainer");
 
 // Templates
 const cardTemplate = document.getElementById("playerInfo");
 const logTemplate = document.getElementById("gameLogPlayers");
+const playerMarkerTemplate = document.getElementById("playerMarker");
 
 /**
  * UI REFERENCES (Dynamic Elements)
@@ -47,6 +49,7 @@ const logTemplate = document.getElementById("gameLogPlayers");
 const uiSquareValues = [];
 const uiCardContainers = [];
 const uiLogs = [];
+const uiPlayerMarkers = [];
 
 /**
  * INITIALIZATION: setUpPlayers
@@ -60,7 +63,7 @@ function setUpPlayers() {
 		// 1. Create Leaderboard Card
 		const cardFragment = cardTemplate.content.cloneNode(true);
 
-		const cardContainer = cardFragment.querySelector(".playerInfo");
+		const cardContainer = cardFragment.firstElementChild;
 		const nameHeading = cardFragment.querySelector("h5");
 		const positionSpan = cardFragment.querySelector(".currentPlayerSquareNumber");
 
@@ -70,14 +73,24 @@ function setUpPlayers() {
 			cardContainer.classList.add("PickedPlayerTurn");
 		}
 
-		// Store reference to the span so we can update it later by index
+		// Store reference so we can update it later by index
 		uiCardContainers.push(cardContainer);
 		uiSquareValues.push(positionSpan);
 		leaderboardContainer.appendChild(cardFragment);
 
-		// 2. Create Game Log Entry
+		// 2. Create Player Markers
+		const markerFragment = playerMarkerTemplate.content.cloneNode(true);
+		const markerItem = markerFragment.firstElementChild;
+
+		// marker.style.color = playerColors[index];
+
+		// Store reference to the log item
+		uiPlayerMarkers.push(markerItem);
+		playerMarkerContainer.appendChild(markerFragment);
+
+		// 3. Create Game Log Entry
 		const logFragment = logTemplate.content.cloneNode(true);
-		const logItem = logFragment.querySelector(".gameLogPlayers");
+		const logItem = logFragment.firstElementChild;
 
 		logItem.textContent = `${name} rolled a 0 and moved to Square 0`;
 
@@ -86,8 +99,33 @@ function setUpPlayers() {
 		logContainer.appendChild(logFragment);
 	});
 
+	players.forEach((_,index)=>{
+		updateMarkerPosition(index,true);
+	});
+
+
 	// Set initial turn text
 	updateTurnDisplay();
+}
+
+function updateMarkerPosition(index,instant=false){
+	//TODO:implement animations
+	if (instant||true/*currently defaults to instant */){
+
+		// currently alternating left position visually
+		// and flipping y direction (advance up)
+		const pos = game.players.get(game.current).position;
+		const yIndex = (GRID_H-pos.y-1);
+		let xIndex = pos.x;
+		if (pos.y%2!==0){
+			xIndex = (GRID_W-pos.x-1);
+		}
+
+		const xPx = xIndex*80+10;
+		const yPx = yIndex*80+10;
+		uiPlayerMarkers[index].style.left = `${xPx}px`;
+		uiPlayerMarkers[index].style.top = `${yPx}px`;
+	}
 }
 
 function updateTurnDisplay() {
@@ -108,13 +146,14 @@ function updatePositionsUI(result) {
 	// advance player
 	let effects = game.advancePlayer(game.current,result);
 
-	// TODO: effects are currently processed at th same time. maybe do it in steps
+	updateMarkerPosition(game.current);
 
 	// process roll result
 	game.processEffects(game.current,effects);
 
+	updateMarkerPosition(game.current);
+
 	// Update visual square number using our array reference
-	// No querySelector needed here!
 	let pos = game.players.get(game.current).position;
 	let distance = pos.y*GRID_W+pos.x+1;
 	uiSquareValues[game.current].textContent = `Square ${distance}`;
