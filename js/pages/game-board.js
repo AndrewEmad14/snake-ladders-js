@@ -212,8 +212,6 @@ async function updatePositionsUI(result) {
 	let distance = pos.y*GRID_W+pos.x+1;
 	uiLogs[game.current].textContent = `${players[game.current]} rolled a ${result} and moved to Square ${distance}`;
 
-	// Note: button becomes enabled after all visual effects and animations are done
-	rollButton.disabled = false;
 }
 
 /**
@@ -249,13 +247,17 @@ rollButton.addEventListener("click", () => {
 	setTimeout(() => {
 		diceImage.src = `../assets/images/dice-${result}.png`;
 
-		updatePositionsUI(result);
-		//Note: button becomes enabled after update updatePositionUI is called
+		updatePositionsUI(result).then(()=>{
+			//Note: button becomes enabled after update updatePositionUI is called
 
-		activePlayerLeaderboardHighlight();
+			activePlayerLeaderboardHighlight();
 
-		// Saving
-		saveGameState(game);
+			// Saving
+			saveGameState(game);
+
+			// Note: button becomes enabled after all visual effects and animations are done
+			rollButton.disabled = false;
+		});
 
 
 	}, 1000);
