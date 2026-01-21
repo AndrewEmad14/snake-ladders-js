@@ -3,19 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Leaderboard</title>
+    <title>Snake & Ladders - Leaderboard</title>
     <link rel="stylesheet" href="../css/leaderboard.css" />
   </head>
   <body>
     <!-- Navigation Bar -->
     <nav>
       <div class="logo-section">
+        <a id="home-button" href="home.html">
         <img  src="../assets/images/game-icon-gameBoardScreen-alt.jpg" alt="game logo" />
         <h2> Snake <span class="highlight">&</span> Ladders</h2>
+        </a>
       </div>
       <div class="nav-buttons">
-        <button id="home-button">Home</button>
-        <button id="instruction-button">Instructions</button>
+        <a id="instruction-link" href="instructions.html">Instructions</a>
+        <a id="leaderboard-link" href="leaderboard.html">Leaderboard</a>
       </div>
     </nav>
 
@@ -73,7 +75,7 @@
           </tbody>
         </table>
         <div class="play-again-button">
-           <button id="play-again-button">Play again</button>
+           <button id="play-button">Play again</button>
         </div>
        
     </main>
