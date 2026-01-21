@@ -249,13 +249,14 @@ rollButton.addEventListener("click", () => {
 	setTimeout(() => {
 		diceImage.src = `../assets/images/dice-${result}.png`;
 
-		updatePositionsUI(result);
-		//Note: button becomes enabled after update updatePositionUI is called
+		updatePositionsUI(result).then(()=>{
+			//Note: button becomes enabled after update updatePositionUI is called
 
-		activePlayerLeaderboardHighlight();
+			activePlayerLeaderboardHighlight();
 
-		// Saving
-		saveGameState(game);
+			// Saving
+			saveGameState(game);
+		});
 
 
 	}, 1000);
