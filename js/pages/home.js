@@ -72,7 +72,7 @@ playButton.addEventListener("click", (event) => {
 	// Encode as JSON
 	console.log( JSON.stringify(playerAccountDataList));
 	window.localStorage.setItem("playerAccountData", JSON.stringify(playerAccountDataList));
-	window.localStorage.setItem("sartNewGame", JSON.stringify(true));
+	window.localStorage.setItem("startNewGame", JSON.stringify(true));
 	window.location.href = "game-board.html";
 });
 

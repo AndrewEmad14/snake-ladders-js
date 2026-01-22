@@ -4,6 +4,7 @@ import { loadGameState, saveGameState } from "../utils/saving-and-loading.js";
 import Grid from "../game-logic/grid.js";
 import PortalTile from "../game-logic/tiles/portalTile.js";
 import PlayerAccountData from "../utils/PlayerAccountData.js";
+import Point from "../utils/point.js";
 /**
  * Constants
  */
@@ -48,8 +49,9 @@ let grid = new Grid(GRID_W,GRID_H);
 	[66,45],
 	[89,53],
 
-	[99,41],
-	[95,76],
+	// for faster winning
+	// [99,41],
+	// [95,76],
 
 	// Ladders
 	[4,23],
@@ -70,14 +72,22 @@ let grid = new Grid(GRID_W,GRID_H);
 });
 let game = new Game(playerIds,grid);
 // check if starting a new game
-let startNew = JSON.parse(window.localStorage.getItem("sartNewGame"));
+let startNew = JSON.parse(window.localStorage.getItem("startNewGame"));
 if (!startNew){
 	let shouldLoad = window.confirm("valid save data found, load game?");
 	if (shouldLoad){
 		loadGameState(game);
 	}
 }
-window.localStorage.setItem("sartNewGame",JSON.stringify(false));
+window.localStorage.setItem("startNewGame",JSON.stringify(false));
+
+// SKIP cheat
+window.skip = function(){
+	game.players.forEach((player,index)=>{
+		player.position = new Point(5,5);
+		updateMarkerPosition(index);
+	});
+};
 
 /**
  * DOM REFERENCES (Static Elements)
@@ -278,6 +288,7 @@ function goToLeaderBoard() {
 
 	// 3. Save the UPDATED data back to the browser's memory
 	window.localStorage.setItem("playerAccountData", JSON.stringify(playerAccountData));
+	window.localStorage.setItem("startNewGame", JSON.stringify(true));
 
 	// 4. Redirect to the Leaderboard Page
 	// This path matches the 'href' seen in your HTML source code
@@ -294,21 +305,22 @@ function activePlayerLeaderboardHighlight() {
 	uiCardContainers[game.current].classList.remove("PickedPlayerTurn");
 
 	// 2. Increment index
+	game.updateQueues();
+
+
+	// 3.check if game ended
 	if (game.winQueue.length > 0)
 	{
 		goToLeaderBoard(); // player won
 		return; // Stop the function here so we don't switch turns
 	}
-	else
-	{
-		game.updateQueues(); // no winner yet
-	}
 
-
-	// 3. Highlight the new player
+	// 4. Highlight the new player
 	uiCardContainers[game.current].classList.add("PickedPlayerTurn");
-
 	updateTurnDisplay();
+
+
+
 }
 
 
