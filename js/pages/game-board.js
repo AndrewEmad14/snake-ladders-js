@@ -85,6 +85,7 @@ window.localStorage.setItem("sartNewGame",JSON.stringify(false));
 const rollButton = document.getElementById("rollDiceButton");
 const diceImage = document.getElementById("diceIcon");
 const activeTurnDisplay = document.getElementById("activeTurnPlayerName");
+const activeTurnPlayerImg= document.getElementById("activeTurnPlayerImg");
 
 // Containers
 const leaderboardContainer = document.getElementById("playersLeaderboard");
@@ -104,6 +105,10 @@ const uiSquareValues = [];
 const uiCardContainers = [];
 const uiLogs = [];
 const uiPlayerMarkers = [];
+
+
+
+
 
 /**
  * INITIALIZATION: setUpPlayers
@@ -167,6 +172,13 @@ function setUpPlayers() {
 	updateTurnDisplay();  /* Make first player active turn */
 }
 
+
+
+
+
+
+
+
 async function updateMarkerPosition(index,instant=false){
 
 	// currently alternating left position visually
@@ -201,12 +213,27 @@ async function updateMarkerPosition(index,instant=false){
 	uiSquareValues[index].textContent = `Square ${distance}`;
 }
 
+
+
+
+
 function updateTurnDisplay() {
 	activeTurnDisplay.textContent = `${players[game.current]}'s Turn`;
+	activeTurnPlayerImg.src=`../assets/images/Player${playerIcons[game.current]}-Icon.jpg`;
 }
+
+
+
 
 // Execute setup on script load
 setUpPlayers();
+
+
+
+
+
+
+
 
 /**
  * advances player and displays the changes along the way
@@ -233,6 +260,31 @@ async function updatePositionsUI(result) {
 
 }
 
+
+
+function goToLeaderBoard() {
+	// 1. Loop through all players in the Game Logic to get their actual positions
+	game.players.forEach((playerData, id) => {
+		// Calculate the linear score (Square 1 to 100)
+		// logic: y * 10 + x + 1
+		const pos = playerData.position;
+		const finalScore = pos.y * GRID_W + pos.x + 1;
+
+		// 2. Update the shared "playerAccountData" object
+		if (playerAccountData[id]) {
+			playerAccountData[id].score = finalScore;
+		}
+	});
+
+	// 3. Save the UPDATED data back to the browser's memory
+	window.localStorage.setItem("playerAccountData", JSON.stringify(playerAccountData));
+
+	// 4. Redirect to the Leaderboard Page
+	// This path matches the 'href' seen in your HTML source code
+	window.location.href = "../html/leaderboard.html";
+}
+
+
 /**
  * TURN MANAGEMENT: activePlayerLeaderboardHighlight
  * Manages the CSS classes on the player card containers.
@@ -242,7 +294,16 @@ function activePlayerLeaderboardHighlight() {
 	uiCardContainers[game.current].classList.remove("PickedPlayerTurn");
 
 	// 2. Increment index
-	game.updateQueues();
+	if (game.winQueue.length > 0)
+	{
+		goToLeaderBoard(); // player won
+		return; // Stop the function here so we don't switch turns
+	}
+	else
+	{
+		game.updateQueues(); // no winner yet
+	}
+
 
 	// 3. Highlight the new player
 	uiCardContainers[game.current].classList.add("PickedPlayerTurn");
@@ -250,12 +311,15 @@ function activePlayerLeaderboardHighlight() {
 	updateTurnDisplay();
 }
 
+
+
+
 /**
  * EVENT LISTENERS
  */
 rollButton.addEventListener("click", () => {
 	// Check win condition
-	if (game.winQueue.length > 0) {return;}
+	//if (game.winQueue.length > 0) {return;}  // go to leaderboard
 
 	rollButton.disabled = true;
 	diceImage.src = "../assets/images/dice-animation.gif";

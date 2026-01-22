@@ -4,6 +4,7 @@ const gameData = window.localStorage.getItem("playerAccountData");
 const tableBody = document.querySelector("tbody");
 const playerAccountData = JSON.parse(gameData);
 const playerRowTemplate = document.getElementById("player-row");
+const playAgainButton = document.getElementById("play-button");
 console.log(playerAccountData);
 playerAccountData.sort((a,b)=>b.score-a.score);
 
@@ -38,3 +39,9 @@ function addPlayerToTable(player,index){
 playerAccountData.forEach((element,index) => {
 	addPlayerToTable(element,index);
 });
+
+
+playAgainButton.addEventListener("click",()=>{
+	window.location.href = "../html/game-board.html";
+}
+);
