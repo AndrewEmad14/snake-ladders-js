@@ -22,9 +22,9 @@ const playerAccountData = JSON.parse(gameData);
 const players = [];
 const playerIcons = [];
 playerAccountData.forEach((player)=>{
-	players.push(player.name)
+	players.push(player.name);
 	playerIcons.push(parseInt(player.imgNumber));
-	
+
 });
 
 
@@ -69,7 +69,15 @@ let grid = new Grid(GRID_W,GRID_H);
 	));
 });
 let game = new Game(playerIds,grid);
-loadGameState(game);
+// check if starting a new game
+let startNew = JSON.parse(window.localStorage.getItem("sartNewGame"));
+if (!startNew){
+	let shouldLoad = window.confirm("valid save data found, load game?");
+	if (shouldLoad){
+		loadGameState(game);
+	}
+}
+window.localStorage.setItem("sartNewGame",JSON.stringify(false));
 
 /**
  * DOM REFERENCES (Static Elements)
