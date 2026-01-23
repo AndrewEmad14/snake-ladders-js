@@ -19,7 +19,7 @@ export default class Game {
 	#grid;            /* game board */
 
 	/**@type {CyclicQueue<number>} */
-	#activeQueue;  /* track whose turn it is 1,2,3,1,2,3,.... */
+	#activeQueue = new CyclicQueue();  /* track whose turn it is 1,2,3,1,2,3,.... */
 
 	/**@type {Array<number>} */
 	#winQueue = [];               /* 3,1,2 ==> player 3 reached 100 then player 1,... */
@@ -30,7 +30,7 @@ export default class Game {
 
 	constructor(playerIds,grid,shufflOnRoundEnd,noOverlap) {
 		// TODO: add validation for parameters
-		this.shufflOnRoundEnd = shufflOnRoundEnd;
+		this.#shufflOnRoundEnd = shufflOnRoundEnd;
 		this.#noOverlap= noOverlap;
 
 		let queueData = this.#activeQueue.data;  /* take direct access to turn order (to add player simply)*/
@@ -79,7 +79,7 @@ export default class Game {
 		this.#winQueue = gameState.winQueue;
 
 		// fill active queue
-		this.#activeQueue.data.clear;
+		this.#activeQueue.data.length=0; // clear array apparently
 		this.#activeQueue.data.push(...gameState.activeQueue);
 		this.#activeQueue.id = gameState.activeIndex;
 
@@ -137,7 +137,7 @@ export default class Game {
 				player.position.key()!==new Point(0,0).key()
 			){
 				// send to checkpoint (currentl 0,0)
-				player.position = new Point(0,0);
+				otherPlayer.position = new Point(0,0);
 			}
 		});
 	}
@@ -150,6 +150,10 @@ export default class Game {
 	advancePlayer(playerId,result){
 		let player = this.#players.get(playerId);
 		return this.#grid.advance(player,result);
+	}
+
+	removePlayerFromActiveQueue(playerId){
+		this.#activeQueue.remove(playerId);
 	}
 
 	/**
@@ -177,8 +181,13 @@ export default class Game {
 		// if index got smaller then new round started
 		// TODO: check if logic holds up
 		if (this.#shufflOnRoundEnd && this.#activeQueue.id<last_index){
+			console.log("shuffled");
 			// simple (but biased) shuffle
 			this.#activeQueue.data.sort(() => Math.random() - 0.5);
+		} else {
+			console.log(this.#shufflOnRoundEnd);
+			console.log(this.#activeQueue.id);
+			console.log(last_index);
 		}
 	}
 
