@@ -1,4 +1,15 @@
 
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  flex:1
+}
+
 
 
 /* Page layout container */
@@ -10,10 +21,15 @@
   border-radius: 8px;
   background-color: #f0f9f8;
   margin-bottom: 20px;
-
+  
   gap: 200px; /* spacing between left and right */
 }
 
+.gameBoard img {
+  width: 800px;
+  height: 800px;
+  border-radius: 8px;
+}
 .gameBoard .player-marker {
   position: absolute;
   width: 60px;
@@ -21,9 +37,7 @@
   transition: transform 0.3s ease-in-out;
 }
 
-.right-side-bar .player-name-indicator{
-  margin-left: 45px;
-}
+
 
 .game-board-image{
   position: absolute;
@@ -40,9 +54,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  width: 25rem;
+  gap: 1.2rem;
 }
 
+.right-side-bar .player-name-indicator{
+  margin-left: 45px;
+}
 /* Game board area */
 .gameBoard {
   position: absolute;
@@ -53,11 +71,7 @@
   border-radius: 15px;
 }
 
-.gameBoard img {
-  width: 800px;
-  height: 800px;
-  border-radius: 8px;
-}
+
 
 /* Right side blocks */
 .overall-right-side-bar-styling {
@@ -119,20 +133,20 @@
   border: dashed 1px #1dc9ba;
   border-radius: 8px;
 
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
 
   background-color: #f0f9f8;
 }
 
 .diceRollSection img {
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 
   object-fit: contain;
   display: block;
-  width: 100px;
-  height: 100px;
+  width: 20rem;
+  height: 10rem;
   border-radius: 20%;
 }
 
@@ -152,6 +166,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  
   gap: 10px;
 }
 
@@ -219,8 +234,9 @@
   padding-left: 20px;
 }
 
+
 /* Game log block */
-.gameLog {
+/* .gameLog {
   margin-bottom: 50px;
   background-color: #f0f9f8;
 }
@@ -242,4 +258,4 @@
   margin-bottom: 35px;
   color: #50958f;
   white-space: nowrap;
-}
+} */
