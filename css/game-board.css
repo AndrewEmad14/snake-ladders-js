@@ -63,12 +63,22 @@ body {
 }
 /* Game board area */
 .gameBoard {
-  position: absolute;
+  position: relative;
+  align-self: flex-start;
   display: grid;
   grid-template-columns: auto auto auto;
 
   background-color: #ffffff;
   border-radius: 15px;
+}
+
+#gameBoardPadding {
+  padding: 20px;
+}
+
+#playerMarkerContainer {
+  position: absolute;
+  width: 800px;
 }
 
 

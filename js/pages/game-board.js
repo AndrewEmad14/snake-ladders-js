@@ -131,8 +131,10 @@ const uiFlagMarker = document.getElementById("flagMarker");
  * stored in arrays so we never have to use querySelector again
  */
 const uiSquareValues = [];
-const uiCardContainers = [];
+const uiQueueContainers = [];
 const uiPlayerMarkers = [];
+const uiCardContainers = [];
+const uiCardImages = [];
 
 
 /**
@@ -235,7 +237,7 @@ function setUpPlayers() {
 		}
 
 		// Store reference so we can update it later by index
-		uiCardContainers.push(clonedPlayerContainer);
+		uiQueueContainers.push(clonedPlayerContainer);
 		uiSquareValues.push(clonedPlayerPosition);
 		leaderboardContainer.appendChild(clonedPlayerContainer);
 
@@ -319,6 +321,7 @@ async function updatePositionsUI(result) {
 
 	// process roll result
 	game.processEffects(game.current,effects);
+	updateCardVisuals(game.current);
 
 	// updates other players, no need to await? not sure
 	players.forEach((_,index)=>{
@@ -358,13 +361,13 @@ function refreshActiveLeaderBoard(){
 	// clear out old children
 	game.players.forEach(player => {
 		let playerId = player.playerId;
-		uiCardContainers[playerId].classList.add("disabled");
+		uiQueueContainers[playerId].classList.add("disabled");
 	});
 
 	// add children that are in the active queue
 	game.activeQueue.forEach(playerId => {
-		leaderboardContainer.append(uiCardContainers[playerId]);
-		uiCardContainers[playerId].classList.remove("disabled");
+		leaderboardContainer.append(uiQueueContainers[playerId]);
+		uiQueueContainers[playerId].classList.remove("disabled");
 	});
 }
 
@@ -406,13 +409,19 @@ function toggleNextTurnButton(btn){
 
 }
 
+
+
 /**
  *toggle the the empty card container to fill it with a new card
  *@param {container} the container to be filled with the card
  */
 
-function toggleFillCard(container){
-	container.classList.toggle("fill");
+function toggleFillCard(container,on){
+	if (on){
+		container.classList.add("fill");
+	} else {
+		container.classList.remove("fill");
+	}
 
 }
 
@@ -441,14 +450,53 @@ function addCards(){
 	for (let i = 0; i < 3; i++) {
 		const card = document.createElement("button");
 		card.className = "card";
+		const image = document.createElement("img");
+		image.className= "card-icon";
+		image.style.display = "none";
 
 
 		card.addEventListener("click", () => {
-			//TODO: process the card effects when clikcked if there was a card
+			if (game.players.get(game.current).cards[i]) {
+				game.playCard(game.current,i);
 
+				updateCardVisuals(game.current); // this one is for reseting your card after it was used
+
+				// TODO: hacky way to update other players, maybe come up with something better
+				game.activeQueue.forEach((playerId)=>{
+					updateMarkerPosition(playerId);
+				});
+
+				updateCardVisuals(game.current); //this one is in case you get a new one afterwards
+			}
 		});
 
+		uiCardContainers.push(card);
+		uiCardImages.push(image);
+
+		card.appendChild(image);
 		cardContainer.appendChild(card);
+	}
+}
+
+function updateCardVisuals(playerId){
+	for (let i = 0; i < 3; i++) {
+		const card = uiCardContainers[i];
+		const image = uiCardImages[i];
+		console.log("-----------");
+		game.players.forEach((player)=>{
+			console.log(player.playerId);
+			console.log(player.cards);
+		});
+		if (game.players.get(playerId).cards.length>i){
+			toggleFillCard(card,true);
+			//TODO: add mapping from card name to image url
+			// image.src = imgMap(game.players.get(playerId).cards[i].name);
+			image.style.display = "flex";
+			image.src= "../assets/images/dice-5.png";
+		} else {
+			toggleFillCard(card,false);
+			image.style.display = "none";
+		}
 	}
 }
 
@@ -458,7 +506,7 @@ function addCards(){
  */
 function activePlayerLeaderboardHighlight() {
 	// 1. Target the .playerInfo container of the player who just moved
-	uiCardContainers[game.current].classList.remove("PickedPlayerTurn");
+	uiQueueContainers[game.current].classList.remove("PickedPlayerTurn");
 	// 2. Increment index
 	game.updateQueues();
 
@@ -483,6 +531,7 @@ function activePlayerLeaderboardHighlight() {
 	}
 
 	refreshActiveLeaderBoard();
+	updateCardVisuals(game.current);
 
 
 	// 3.check if game ended
@@ -493,7 +542,7 @@ function activePlayerLeaderboardHighlight() {
 	}
 
 	// 4. Highlight the new player
-	uiCardContainers[game.current].classList.add("PickedPlayerTurn");
+	uiQueueContainers[game.current].classList.add("PickedPlayerTurn");
 	updateTurnDisplay();
 
 
