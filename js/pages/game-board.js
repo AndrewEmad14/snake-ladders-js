@@ -216,7 +216,7 @@ window.weightedRoll = function(n) {
 	let result = n;
 
 	setTimeout(() => {
-		diceImage.src = "../assets/images/cheater.webp";
+		diceImage.src = "../assets/images/cheat.jpeg";
 
 		updatePositionsUI(result).then(()=>{
 			//Note: button becomes enabled after update updatePositionUI is called

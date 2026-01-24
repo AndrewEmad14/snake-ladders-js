@@ -2,6 +2,23 @@
 
 import PlayerAccountData from "../utils/PlayerAccountData.js";
 
+
+const templateSelect = document.getElementById("templateSelect").content;
+
+for (let i=1;i<=4;i++) /* generate the players in home page dynamically */
+{
+	const clone = templateSelect.cloneNode(true);
+	const selectElement = clone.querySelector("select");
+	selectElement.id = `player${i}-select`;
+	const inputElement = clone.querySelector("input");
+	inputElement.id = `player${i}-name`;
+	inputElement.name = `player${i}-name`;
+	inputElement.placeholder = `Player${i} Name`;
+
+	document.getElementById("players").appendChild(clone);
+}
+
+
 function clearInputFields() {
 	const inputs = document.querySelectorAll('input[type="text"]');
 	inputs.forEach(input => {
@@ -31,18 +48,26 @@ function updateAllSelectsDisabled(allSelects, disabledValues) {
 const playButton = document.getElementById("play-button");
 const userEntries = document.querySelectorAll(".user-entry");
 const allSelects = Array.from(userEntries).map(entery => entery.querySelector("select"));
+
 let prevChoices = new Map();
 let disabledOptions = new Set();
+
+
+
 userEntries.forEach((entery) => {
 	const selectElement = entery.querySelector("select");
 	const imgElement = entery.querySelector("img");
+
 	selectElement.addEventListener("change", (event) => {
+
 		const selectedValue = event.target.value;
 		const selectedId = event.target.id;
+
 		if (prevChoices.has(selectedId)) {
 			const prevValue = prevChoices.get(selectedId);
 			disabledOptions.delete(prevValue);
 		}
+
 		prevChoices.set(selectedId, parseInt(selectedValue));
 		imgElement.src = `../assets/images/Player${selectedValue}-Icon.jpg`;
 		disabledOptions.add(parseInt(selectedValue));
@@ -50,6 +75,13 @@ userEntries.forEach((entery) => {
 		updateAllSelectsDisabled(allSelects, disabledOptions);
 	});
 });
+
+
+
+
+
+
+
 
 playButton.addEventListener("click", (event) => {
 	event.preventDefault(); // Stop navigation temporarily
@@ -89,6 +121,10 @@ playButton.addEventListener("click", (event) => {
 	window.localStorage.setItem("challengesToggled", JSON.stringify(challengesToggled));
 	window.location.href = "game-board.html";
 });
+
+
+
+
 
 let challengesToggled = JSON.parse(window.localStorage.getItem("challengesToggled"));
 if (!challengesToggled) {
