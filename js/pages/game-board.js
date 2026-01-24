@@ -492,7 +492,7 @@ function updateCardVisuals(playerId){
 			//TODO: add mapping from card name to image url
 			// image.src = imgMap(game.players.get(playerId).cards[i].name);
 			image.style.display = "flex";
-			image.src= "../assets/images/dice-1.png";
+			image.src= "../assets/images/dice-5.png";
 		} else {
 			toggleFillCard(card,false);
 			image.style.display = "none";
