@@ -1,4 +1,11 @@
+import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
+import { play } from "../utils/sound.js";
+document.addEventListener("DOMContentLoaded", () => {
+  enableGlobalButtonSfx();
 
+  // Win music on leaderboard load
+ play("win", { volume: 0.8, restart: true });
+});
 import PlayerAccountData from "../utils/PlayerAccountData.js";
 const gameData = window.localStorage.getItem("playerAccountData");
 const tableBody = document.querySelector("tbody");
