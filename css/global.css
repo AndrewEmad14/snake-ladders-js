@@ -219,3 +219,38 @@ footer {
   background-color: white;
   margin-top: auto;
 }
+
+dialog{
+  border-radius: 2rem;
+  min-height: 10rem;
+  min-width: 30rem;
+  width:fit-content;
+  color: var(--surface);
+  border-color: none;
+
+}
+
+
+dialog p{
+    text-align: center;
+    padding: 1rem;
+    font-size:x-large
+}
+dialog div{
+  display: flex;
+  justify-content: space-between;
+
+}
+dialog.alert{
+  background-color: var(--surface);
+  box-shadow: 0 5px 0px var(--bg);
+}
+dialog button.confirm-style{
+  background: #4FC3F7;
+  box-shadow:  0 5px 0 #499ae7;
+  color: #fff;
+}
+dialog button.cancel-style{
+  background-color: #c33;
+  box-shadow: 0 5px 0px rgb(168, 7, 7);
+}

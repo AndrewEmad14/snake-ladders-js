@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const templateSelect = document.getElementById("templateSelect").content;
 
+let dialog = document.getElementById("customDialog");
+
 for (let i=1;i<=4;i++) /* generate the players in home page dynamically */
 {
 	const clone = templateSelect.cloneNode(true);
@@ -222,3 +224,59 @@ window.addEventListener("DOMContentLoaded", () => { // containers is dynammicall
 	}
 });
 
+/*
+* show pop up shows the message to the user and returns the result , this is done specially for confirm messages
+*as they return true , the problem was the confirm and alert block the user form interacting with the page which made it 
+*synchronus , but here since there is intese regulations about blocking the user from the website by the browser engines 
+* i had to use  a promise and async/await
+*@params{message}
+*@params{type}
+*/
+async function popUpHandler(message,type,callback){
+    let result =await createDialog(message,type)
+    callback(result)
+}
+/*
+* this is a function to create a dialog instead of using alert
+* @param{message} your message you want to show to the user
+* @param{type}  the type of your message , is it alert or confirm
+*
+*/
+
+function createDialog(message, type = "alert") {
+  return new Promise((resolve) => {
+    const dialog = document.querySelector("dialog");
+    dialog.innerHTML = "";
+
+    let userMessage = document.createElement("p");
+    let buttonsContainer = document.createElement("div");
+    let confirm = document.createElement("button");
+    let cancel = document.createElement("button");
+
+    userMessage.textContent = message;
+    confirm.textContent = "Ok";
+    cancel.textContent = "Cancel";
+    confirm.classList.add("confirm-style");
+    cancel.classList.add("cancel-style");
+
+    dialog.append(userMessage);
+    buttonsContainer.append(confirm);
+
+    if (type === "confirm") {
+      buttonsContainer.append(cancel);
+    }
+
+    dialog.append(buttonsContainer);
+    dialog.showModal();
+
+    cancel.addEventListener("click", () => {
+      dialog.close();
+      resolve(false);
+    });
+
+    confirm.addEventListener("click", () => {
+      dialog.close();
+      resolve(true);
+    });
+  });
+}
