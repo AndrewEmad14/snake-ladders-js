@@ -8,7 +8,7 @@ function getAudioSrc() {
   // If the current URL contains "/html/", then assets path should be "../assets/..."
   // Otherwise (rare), it might be "./assets/..."
   const inHtmlFolder = window.location.pathname.includes("/html/");
-  return inHtmlFolder ? "../assets/audio/gameBG.wav" : "./assets/audio/gameBG.wav";
+  return inHtmlFolder ? "../assets/audio/gameBG.mp3" : "./assets/audio/gameBG.wav";
 }
 
 // Create audio only once
