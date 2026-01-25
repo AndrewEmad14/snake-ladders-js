@@ -8,35 +8,12 @@ import Point from "../utils/point.js";
 import CardTile from "../game-logic/tiles/cardTile.js";
 import { allCards, nameToCardIndex } from "../game-logic/all-cards.js";
 import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
-
-/* ADDED: Sound player (SFX) */
-import { play } from "../utils/sound.js";
-
-
-/* ADDED: Background music (BGM) */
-const bgMusic = (() => {
-	// Background music for the game-board page
-	const url = new URL("../../assets/audio/gameBG.wav", import.meta.url);
-	const a = new Audio(url);
-	a.preload = "auto";
-	a.loop = true;
-	a.volume = 0.18; // Background sound volume
-	return a;
-})();
-
+import { initBgm } from "../utils/bgm.js";
+import { play } from "../utils/sound.js"; // ADDED: Sound player (SFX-DICE ROLL, MOVE, SNAKE, LADDER, WIN, LOSE)
 document.addEventListener("DOMContentLoaded", () => {
-	enableGlobalButtonSfx();
-
-	// 🔊 ADDED: Start background music on first user interaction (browser autoplay policy)
-	const startBGMOnce = () => {
-		bgMusic.play().catch(() => {});
-		window.removeEventListener("pointerdown", startBGMOnce, true);
-		window.removeEventListener("keydown", startBGMOnce, true);
-	};
-	window.addEventListener("pointerdown", startBGMOnce, true);
-	window.addEventListener("keydown", startBGMOnce, true);
+	enableGlobalButtonSfx(); // enable button sound effects globally
+	initBgm(); // initialize background music
 });
-
 
 /**
  * Constants
@@ -92,8 +69,6 @@ playerAccountData.forEach((player)=>{
 	playerIcons.push(parseInt(player.imgNumber));
 
 });
-
-
 /**
  * Build Game
  */
@@ -208,16 +183,6 @@ if (!challengeCards){
 /**
  * End of Setup Script
  */
-
-
-
-
-
-
-
-
-
-
 
 /** ---------------------------------------------------------------------------------------------------------
  * FUNCTIONs
@@ -335,8 +300,6 @@ function setUpPlayers() {
 	updateTurnDisplay();  /* Make first player active turn */
 }
 
-
-
 /**
  * UI update functions
  * TODO: split logic and UI from each other
@@ -377,7 +340,6 @@ function updateTurnDisplay() {
 	activeTurnPlayerImg.src=`../assets/images/Player${playerIcons[game.current]}-Icon.jpg`;
 }
 
-
 /**
  * advances player and displays the changes along the way
  * @param {number} result
@@ -402,7 +364,7 @@ async function updatePositionsUI(result) {
 	// process roll result
 	game.processEffects(game.current,effects);
 
-	// 🔊 ADDED: After effects (snake/ladder) apply, detect if player jumped
+	// ADDED: After effects (snake/ladder) apply, detect if player jumped
 	const afterPos = game.players.get(game.current).position;
 	const afterDist = afterPos.y * GRID_W + afterPos.x + 1;
 
@@ -427,8 +389,6 @@ async function updatePositionsUI(result) {
 	await updateMarkerPosition(game.current);
 
 }
-
-
 
 function goToLeaderBoard() {
 
@@ -483,7 +443,6 @@ function activePlayerPowerUps(){
 
 }
 
-
 /**
  * UI-Toggles
  *
@@ -525,7 +484,6 @@ function toggleFillCard(container,on){
  *toggle the dice container to replace it with the card description
  *@param {container} the container to be replaced
  */
-
 
 function toggleDescription(container){
 	container.classList.toggle("active");
@@ -625,8 +583,7 @@ function activePlayerLeaderboardHighlight() {
 			let player = game.players.get(playerId);
 
 			if (player.position.y<currentEliminationRow){
-				// 🔊 ADDED: Lose sound when a player gets eliminated (challenge mode)
-				// Sound for losing (elimination)
+				//ADDED: Lose sound when a player gets eliminated (challenge mode)
 				play("lose", { volume: 0.9, restart: true });
 
 				game.removePlayerFromActiveQueue(playerId);
@@ -664,18 +621,6 @@ function activePlayerLeaderboardHighlight() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /** ----------------------------------------------------------------------------------------------
  * EVENT LISTENERS
  */
@@ -689,8 +634,7 @@ rollButton.addEventListener("click", ()=>{
 			rollButton.disabled = true;
 			diceImage.src = "../assets/images/dice-animation.gif";
 
-			// 🔊 ADDED: Dice roll sound when user clicks Roll Dice
-			// Sound for rolling dice
+			// ADDED: Dice roll sound when user clicks Roll Dice
 			play("dice", { volume: 0.9, restart: true });
 
 			let result = diceRoll(ROLL_SIZE);
