@@ -1,14 +1,10 @@
 import PlayerAccountData from "../utils/PlayerAccountData.js";
 import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-	enableGlobalButtonSfx();
-});
-
 import { initBgm } from "../utils/bgm.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-	initBgm({ volume: 0.25 });
+	enableGlobalButtonSfx(); // enable button sound effects globally
+	initBgm(); // initialize background music
 });
 
 const templateSelect = document.getElementById("templateSelect").content;
