@@ -6,35 +6,12 @@ import PortalTile from "../game-logic/tiles/portalTile.js";
 import CardTile from "../game-logic/tiles/cardTile.js";
 import { allCards, nameToCardIndex } from "../game-logic/all-cards.js";
 import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
-
-/* ADDED: Sound player (SFX) */
-import { play } from "../utils/sound.js";
-
-
-/* ADDED: Background music (BGM) */
-const bgMusic = (() => {
-	// Background music for the game-board page
-	const url = new window.URL("../../assets/audio/gameBG.wav", import.meta.url);
-	const a = new window.Audio(url);
-	a.preload = "auto";
-	a.loop = true;
-	a.volume = 0.18; // Background sound volume
-	return a;
-})();
-
+import { initBgm } from "../utils/bgm.js";
+import { play } from "../utils/sound.js"; // ADDED: Sound player (SFX-DICE ROLL, MOVE, SNAKE, LADDER, WIN, LOSE)
 document.addEventListener("DOMContentLoaded", () => {
-	enableGlobalButtonSfx();
-
-	// 🔊 ADDED: Start background music on first user interaction (browser autoplay policy)
-	const startBGMOnce = () => {
-		bgMusic.play().catch(() => {});
-		window.removeEventListener("pointerdown", startBGMOnce, true);
-		window.removeEventListener("keydown", startBGMOnce, true);
-	};
-	window.addEventListener("pointerdown", startBGMOnce, true);
-	window.addEventListener("keydown", startBGMOnce, true);
+	enableGlobalButtonSfx(); // enable button sound effects globally
+	initBgm(); // initialize background music
 });
-
 
 /**
  * Constants
@@ -91,8 +68,6 @@ playerAccountData.forEach((player)=>{
 	playerIcons.push(parseInt(player.imgNumber));
 
 });
-
-
 /**
  * Build Game
  */
@@ -215,20 +190,9 @@ intilaizeGame();
  * End of Setup Script
  */
 
-
-
-
-
-
-
-
-
-
-
 /** ---------------------------------------------------------------------------------------------------------
  * FUNCTIONs
  */
-
 
 /**
  * Cheats
@@ -341,8 +305,6 @@ function setUpPlayers() {
 	updateTurnDisplay();  /* Make first player active turn */
 }
 
-
-
 /**
  * UI update functions
  * TODO: split logic and UI from each other
@@ -383,7 +345,6 @@ function updateTurnDisplay() {
 	activeTurnPlayerImg.src=`../assets/images/Player${playerIcons[game.current]}-Icon.jpg`;
 }
 
-
 /**
  * advances player and displays the changes along the way
  * @param {number} result
@@ -408,7 +369,7 @@ async function updatePositionsUI(result) {
 	// process roll result
 	game.processEffects(game.current,effects);
 
-	// 🔊 ADDED: After effects (snake/ladder) apply, detect if player jumped
+	// ADDED: After effects (snake/ladder) apply, detect if player jumped
 	const afterPos = game.players.get(game.current).position;
 	const afterDist = afterPos.y * GRID_W + afterPos.x + 1;
 
@@ -433,8 +394,6 @@ async function updatePositionsUI(result) {
 	await updateMarkerPosition(game.current);
 
 }
-
-
 
 function goToLeaderBoard() {
 
@@ -480,7 +439,6 @@ function updateEliminationFlagPosition(){
 	// uiFlagMarker.style.top=${80*(GRID_H-currentEliminationRow-1)}px;
 }
 
-
 /**
  * Card UI Changes
  *
@@ -488,8 +446,6 @@ function updateEliminationFlagPosition(){
 // function activePlayerPowerUps(){
 
 // }
-
-
 /**
  * UI-Toggles
  *
@@ -532,7 +488,6 @@ function toggleFillCard(container,on){
  *@param {container} the container to be replaced
  */
 
-
 function toggleDescription(container){
 	container.classList.toggle("active");
 
@@ -546,7 +501,6 @@ function toggleDescription(container){
 		container.appendChild(diceImage);
 	}
 }
-
 
 function addCards(){
 	for (let i = 0; i < 3; i++) {
@@ -631,8 +585,7 @@ function activePlayerLeaderboardHighlight() {
 			let player = game.players.get(playerId);
 
 			if (player.position.y<currentEliminationRow){
-				// 🔊 ADDED: Lose sound when a player gets eliminated (challenge mode)
-				// Sound for losing (elimination)
+				//ADDED: Lose sound when a player gets eliminated (challenge mode)
 				play("lose", { volume: 0.9, restart: true });
 
 				game.removePlayerFromActiveQueue(playerId);
@@ -665,22 +618,21 @@ function activePlayerLeaderboardHighlight() {
 	uiQueueContainers[game.current].classList.add("PickedPlayerTurn");
 	updateTurnDisplay();
 
-
-
 }
 
-function mainButtonPress(){
+/** ----------------------------------------------------------------------------------------------
+ * EVENT LISTENERS
+ */
+rollButton.addEventListener("click", ()=>{
 	// Check win condition
 	//if (game.winQueue.length > 0) {return;}  // go to leaderboard
-
-
 	if (!rollButton.classList.contains("active")){
 		if (!rollButton.classList.contains("end-turn")||!challengeCards){
+
 			rollButton.disabled = true;
 			diceImage.src = "../assets/images/dice-animation.gif";
 
-			// 🔊 ADDED: Dice roll sound when user clicks Roll Dice
-			// Sound for rolling dice
+			// ADDED: Dice roll sound when user clicks Roll Dice
 			play("dice", { volume: 0.9, restart: true });
 
 			let result = diceRoll(ROLL_SIZE);
@@ -688,13 +640,25 @@ function mainButtonPress(){
 				diceImage.src = `../assets/images/dice-${result}.png`;
 
 				updatePositionsUI(result).then(()=>{
-
 					// Note: button becomes enabled after all visual effects and animations are done
 					rollButton.disabled = false;
+
+					let currentPlayer = game.players.get(game.activeQueue[game.current]);  // case: to go to leaderboard after winning immedeatly
+					let hasWon = game.checkWinCondition(currentPlayer);
+
+					if (hasWon) {
+						game.updateQueues();
+						saveGameState(game);
+						goToLeaderBoard();
+						return;
+					}
+
 					if (challengeCards){
 						toggleNextTurnButton(rollButton);
 						// toggleDescription(outcomeSection);
-					} else {
+					}
+					 else {
+						//goToLeaderBoard();
 						activePlayerLeaderboardHighlight();
 					}
 				});
@@ -708,24 +672,13 @@ function mainButtonPress(){
 			// toggleDescription(outcomeSection);
 		}
 
-
 	} else {
 		toggleNextTurnButton(rollButton);
 		toggleDescription(outcomeSection);
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
+);
 
 /** ----------------------------------------------------------------------------------------------
  * EVENT LISTENERS
