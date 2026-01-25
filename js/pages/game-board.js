@@ -137,7 +137,7 @@ let grid = new Grid(GRID_W,GRID_H);
 // initialize challenges
 const challengeNoOverlap = challengesToggled[0];
 const challengeShuffle = challengesToggled[1];
-const challengeCards = challengesToggled[2];
+const challengeCards = !challengesToggled[2];							// quick hot fix to make the cards enabled at the start for fun , thats a duct tape solution
 const challengeElimination = challengesToggled[3];
 let currentEliminationRow = 0;
 

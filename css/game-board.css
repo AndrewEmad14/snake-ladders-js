@@ -344,11 +344,11 @@ button:hover~.tooltiptext {
 .card-tile-marker {
   position: absolute;
   border-radius: 10px;
-  background-color: #aa333333;
+  background-color: #499ae733;
   width: 70px;
   height: 70px;
   margin: 5px;
-  border: solid 5px #c33;
+  border: solid 5px #4FC3F7;
 }
 
 /* Game log block */
