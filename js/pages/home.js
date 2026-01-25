@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const templateSelect = document.getElementById("templateSelect").content;
 
-let dialog = document.getElementById("customDialog");
 
 for (let i=1;i<=4;i++) /* generate the players in home page dynamically */
 {
@@ -97,7 +96,7 @@ userEntries.forEach((entery) => {
 
 
 
-playButton.addEventListener("click", (event) => {
+playButton.addEventListener("click", async (event) => {
 	event.preventDefault(); // Stop navigation temporarily
 	let playerAccountDataList = [];
 	let playerCount = 0;
@@ -109,19 +108,23 @@ playButton.addEventListener("click", (event) => {
 
 		if (playerAccountDataList.find((player) => player.name === playerName)) {
 			console.log("Duplicate name found:", playerName);
-			window.alert("Please choose different names for each player");
+			let result = await createDialog("Please choose different names for each player");
+			console.log(result);
 			return;
 		}
 
 		if (playerName) {
 			if (!/^[a-z]+$/i.test(playerName)) // Check if name is letters only
 			{
-				window.alert("Player name must contain only letters: " + playerName);
+				let result = await createDialog("Player name must contain only letters: " + playerName);
+				console.log(result);
 				return;
 			}
 			if (selectedImg.value === "") {
-				window.alert("Please select an image for " + playerName);
+				let result = await createDialog("Please select an image for " + playerName);
+				console.log(result);
 				return;
+				
 			}
 			playerAccountDataList.push(new PlayerAccountData(playerName, selectedImg.value));
 			playerCount++;
@@ -129,7 +132,8 @@ playButton.addEventListener("click", (event) => {
 	}
 
 	if (playerCount < 2) {
-		window.alert("A least Two players are required to play the game");
+		let result = await createDialog("A least Two players are required to play the game");
+		console.log(result);
 		return;
 	}
 
@@ -224,18 +228,7 @@ window.addEventListener("DOMContentLoaded", () => { // containers is dynammicall
 	}
 });
 
-/*
-* show pop up shows the message to the user and returns the result , this is done specially for confirm messages
-*as they return true , the problem was the confirm and alert block the user form interacting with the page which made it 
-*synchronus , but here since there is intese regulations about blocking the user from the website by the browser engines 
-* i had to use  a promise and async/await
-*@params{message}
-*@params{type}
-*/
-async function popUpHandler(message,type,callback){
-    let result =await createDialog(message,type)
-    callback(result)
-}
+
 /*
 * this is a function to create a dialog instead of using alert
 * @param{message} your message you want to show to the user

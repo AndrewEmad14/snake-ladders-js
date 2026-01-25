@@ -50,6 +50,7 @@ const CELL_SIZE = 80;     // 80 comes from: 800px Board Width / 10 Columns
  * DOM REFERENCES (Static Elements)
  */
 const rollButton = document.getElementById("rollDiceButton");
+const restartButton = document.getElementById("restart-game");
 const diceImage = document.getElementById("diceIcon");
 const activeTurnDisplay = document.getElementById("activeTurnPlayerName");
 const activeTurnPlayerImg= document.getElementById("activeTurnPlayerImg");
@@ -172,36 +173,43 @@ if (challengeCards){
 
 let game = new Game(playerIds,grid,challengeShuffle,challengeNoOverlap);
 
-// load if not starting a new game
-let startNew = JSON.parse(window.localStorage.getItem("startNewGame"));
-if (!startNew){
-	//TODO: remove alert if possible
-	let shouldLoad = window.confirm("valid save data found, load game?");
-	if (shouldLoad){
+/*
+* i wrapped the starting script with async to wait for the user input about wherether to load the data or not
+
+*/
+function intilaizeGame(){
+	// load if not starting a new game
+	let startNew = JSON.parse(window.localStorage.getItem("startNewGame"));
+
+	if (!startNew){
+		//TODO: remove alert if possible
 		loadGameState(game);
+		
 	}
-}
-window.localStorage.setItem("startNewGame",JSON.stringify(false));
-saveGameState(game);
+	window.localStorage.setItem("startNewGame",JSON.stringify(false));
+	saveGameState(game);
+	setUpPlayers();
+	addCards(); //add empty card buttons
+	refreshActiveLeaderBoard();
 
-setUpPlayers();
-addCards(); //add empty card buttons
-refreshActiveLeaderBoard();
+	if (challengeElimination){
+		updateEliminationFlagPosition();
+		uiFlagMarker.hidden=false;
+	}
 
-if (challengeElimination){
-	updateEliminationFlagPosition();
-	uiFlagMarker.hidden=false;
+	if (!challengeShuffle){
+		uiShuffleMarker.style.display="none";
+	}
+
+	if (!challengeCards){
+		cardContainer.style.display="none";
+	} else {
+		updateCardVisuals(game.current);
+	}
+	
 }
 
-if (!challengeShuffle){
-	uiShuffleMarker.style.display="none";
-}
-
-if (!challengeCards){
-	cardContainer.style.display="none";
-} else {
-	updateCardVisuals(game.current);
-}
+intilaizeGame();
 
 /**
  * End of Setup Script
@@ -732,3 +740,63 @@ window.addEventListener("keypress",(event)=>{
 		}
 	}
 });
+
+restartButton.addEventListener("click",restartGame)
+
+
+/*
+* this is a function to create a dialog instead of using alert
+* @param{message} your message you want to show to the user
+* @param{type}  the type of your message , is it alert or confirm
+*
+*/
+
+function createDialog(message, type = "alert") {
+  return new Promise((resolve) => {
+    const dialog = document.querySelector("dialog");
+    dialog.innerHTML = "";
+
+    let userMessage = document.createElement("p");
+    let buttonsContainer = document.createElement("div");
+    let confirm = document.createElement("button");
+    let cancel = document.createElement("button");
+
+    userMessage.textContent = message;
+    confirm.textContent = "Ok";
+    cancel.textContent = "Cancel";
+    confirm.classList.add("confirm-style");
+    cancel.classList.add("cancel-style");
+
+    dialog.append(userMessage);
+    buttonsContainer.append(confirm);
+
+    if (type === "confirm") {
+      buttonsContainer.append(cancel);
+    }
+
+    dialog.append(buttonsContainer);
+    dialog.showModal();
+
+    cancel.addEventListener("click", () => {
+      dialog.close();
+      resolve(false);
+    });
+
+    confirm.addEventListener("click", () => {
+      dialog.close();
+      resolve(true);
+    });
+  });
+}
+
+async function  restartGame(){
+		let shouldLoad = await createDialog("are you sure you want to restart?","confirm");
+		if (shouldLoad){
+			window.localStorage.setItem("startNewGame",JSON.stringify(true));
+			location.reload()
+		}
+	
+
+}
+
+

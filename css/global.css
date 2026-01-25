@@ -175,7 +175,11 @@ button:active,
   transform: translateY(5px);
   box-shadow: none;
 }
-
+button img{
+  width:2rem;
+  height: 2rem;
+  margin: .5rem;
+}
 /* Secondary / ghost buttons (Back to Home style) */
 #backToHomeLink,
 .btn-ghost {
@@ -225,24 +229,30 @@ dialog{
   min-height: 10rem;
   min-width: 30rem;
   width:fit-content;
-  color: var(--surface);
-  border-color: none;
+  color: black;
+  border: none;
+  padding: 1rem;
 
 }
 
 
 dialog p{
+    background-color: #dcf1f0;
+    border-radius: 1rem;
+   
     text-align: center;
-    padding: 1rem;
+    padding: 2rem;
     font-size:x-large
 }
 dialog div{
   display: flex;
   justify-content: space-between;
+  padding: 1rem;
 
 }
 dialog.alert{
   background-color: var(--surface);
+  
   box-shadow: 0 5px 0px var(--bg);
 }
 dialog button.confirm-style{
