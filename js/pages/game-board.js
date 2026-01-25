@@ -6,33 +6,12 @@ import PortalTile from "../game-logic/tiles/portalTile.js";
 import CardTile from "../game-logic/tiles/cardTile.js";
 import { allCards, nameToCardIndex } from "../game-logic/all-cards.js";
 import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
-
-/* ADDED: Sound player (SFX) */
-import { play } from "../utils/sound.js";
-
-
-/* ADDED: Background music (BGM) */
-const bgMusic = (() => {
-	// Background music for the game-board page
-	const url = new window.URL("../../assets/audio/gameBG.wav", import.meta.url);
-	const a = new window.Audio(url);
-	a.preload = "auto";
-	a.loop = true;
-	a.volume = 0.18; // Background sound volume
-	return a;
-})();
+import { initBgm } from "../utils/bgm.js";
+import { play } from "../utils/sound.js"; // ADDED: Sound player (SFX-DICE ROLL, MOVE, SNAKE, LADDER, WIN, LOSE);
 
 document.addEventListener("DOMContentLoaded", () => {
-	enableGlobalButtonSfx();
-
-	// 🔊 ADDED: Start background music on first user interaction (browser autoplay policy)
-	const startBGMOnce = () => {
-		bgMusic.play().catch(() => {});
-		window.removeEventListener("pointerdown", startBGMOnce, true);
-		window.removeEventListener("keydown", startBGMOnce, true);
-	};
-	window.addEventListener("pointerdown", startBGMOnce, true);
-	window.addEventListener("keydown", startBGMOnce, true);
+  enableGlobalButtonSfx(); // enable button sound effects globally
+  initBgm(); // initialize background music
 });
 
 
@@ -691,7 +670,7 @@ function mainButtonPress(){
 
 					// Note: button becomes enabled after all visual effects and animations are done
 					rollButton.disabled = false;
-					
+
 					let currentPlayer = game.players.get(game.activeQueue[game.current]);  // case: to go to leaderboard after winning immedeatly
 					let hasWon = game.checkWinCondition(currentPlayer);
 

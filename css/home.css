@@ -3,7 +3,21 @@
   box-sizing: border-box;
 }
 
+body {
 
+
+  /* Background layers */
+  background:
+    /* soft overlay so text stays readable but BG still visible */
+    radial-gradient(1200px 700px at 50% 35%, rgba(255,255,255,0.18), rgba(242,247,247,0.45)),
+    url("../assets/images/BG.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Parallax-ish motion */
+  animation: bgParallax 14s ease-in-out infinite alternate;
+}
 
 /* The home layout blocks */
 main {
@@ -25,7 +39,7 @@ main {
 
 .font-small {
   font-size: bold;
-  color: var(--primary-dark);
+  color:  #0f665f;;
 }
 
 .note {

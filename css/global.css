@@ -223,7 +223,25 @@ footer {
   background-color: white;
   margin-top: auto;
 }
-
+.bgm-toggle{
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  cursor: pointer;
+  z-index: 9999;          /* make sure it's above everything */
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.bgm-toggle:hover{
+  transform: translateY(-1px);
+}
 dialog{
   border-radius: 2rem;
   min-height: 10rem;
