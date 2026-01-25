@@ -1,3 +1,9 @@
+import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  enableGlobalButtonSfx();
+});
+
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 
 if (scrollTopBtn) {

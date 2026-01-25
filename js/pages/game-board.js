@@ -7,6 +7,35 @@ import PlayerAccountData from "../utils/PlayerAccountData.js";
 import Point from "../utils/point.js";
 import CardTile from "../game-logic/tiles/cardTile.js";
 import { allCards, nameToCardIndex } from "../game-logic/all-cards.js";
+import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
+
+/* ADDED: Sound player (SFX) */
+import { play } from "../utils/sound.js";
+
+/* ADDED: Background music (BGM) */
+const bgMusic = (() => {
+  // Background music for the game-board page
+  const url = new URL("../../assets/audio/gameBG.wav", import.meta.url);
+  const a = new Audio(url);
+  a.preload = "auto";
+  a.loop = true;
+  a.volume = 0.18; // Background sound volume
+  return a;
+})();
+
+document.addEventListener("DOMContentLoaded", () => {
+  enableGlobalButtonSfx();
+
+  // 🔊 ADDED: Start background music on first user interaction (browser autoplay policy)
+  const startBGMOnce = () => {
+    bgMusic.play().catch(() => {});
+    window.removeEventListener("pointerdown", startBGMOnce, true);
+    window.removeEventListener("keydown", startBGMOnce, true);
+  };
+  window.addEventListener("pointerdown", startBGMOnce, true);
+  window.addEventListener("keydown", startBGMOnce, true);
+});
+
 
 /**
  * Constants
@@ -315,8 +344,8 @@ async function updateMarkerPosition(index,instant=false){
 	translateX(${xPx}px)
 	translateY(${yPx}px)
 	`;
-	// uiPlayerMarkers[index].style.left = `${xPx}px`;
-	// uiPlayerMarkers[index].style.top = `${yPx}px`;
+	// uiPlayerMarkers[index].style.left = ${xPx}px;
+	// uiPlayerMarkers[index].style.top = ${yPx}px;
 
 	// Update visual square number using our array reference
 	let distance = pos.y*GRID_W+pos.x+1;
@@ -337,6 +366,14 @@ async function updatePositionsUI(result) {
 	// TODO: currently a player wins even if they roll too high
 	// if that needs to change update the advance function in grid
 
+	//  ADDED: Move sound (player starts moving after dice roll)
+	// Sound for player movement
+	play("move", { volume: 0.55, restart: true });
+
+	// ADDED: detect snake/ladder by comparing distance before/after effects
+	const beforePos = game.players.get(game.current).position;
+	const beforeDist = beforePos.y * GRID_W + beforePos.x + 1;
+
 	// advance player
 	let effects = game.advancePlayer(game.current,result);
 
@@ -344,6 +381,22 @@ async function updatePositionsUI(result) {
 
 	// process roll result
 	game.processEffects(game.current,effects);
+
+	// 🔊 ADDED: After effects (snake/ladder) apply, detect if player jumped
+	const afterPos = game.players.get(game.current).position;
+	const afterDist = afterPos.y * GRID_W + afterPos.x + 1;
+
+	// If the move changed more than the dice roll, it means a portal (snake/ladder) happened
+	const jumpDelta = afterDist - (beforeDist + result);
+
+	if (jumpDelta > 0) {
+		// Sound for ladder climb
+		play("ladder", { volume: 0.8, restart: true }); // Ladder sound
+	} else if (jumpDelta < 0) {
+		// Sound for snake slide
+		play("snake", { volume: 0.8, restart: true }); // Snake sound
+	}
+
 	updateCardVisuals(game.current);
 
 	// updates other players, no need to await? not sure
@@ -358,6 +411,10 @@ async function updatePositionsUI(result) {
 
 
 function goToLeaderBoard() {
+	// ADDED: Win sound before redirecting
+	// Sound for winning the game
+	play("win", { volume: 0.95, restart: true });
+
 	// 1. Loop through all players in the Game Logic to get their actual positions
 	game.players.forEach((playerData, id) => {
 		// Calculate the linear score (Square 1 to 100)
@@ -397,7 +454,7 @@ function refreshActiveLeaderBoard(){
 
 function updateEliminationFlagPosition(){
 	uiFlagMarker.style.transform= `translateY(${80*(GRID_H-currentEliminationRow-1)}px)`;
-	// uiFlagMarker.style.top=`${80*(GRID_H-currentEliminationRow-1)}px`;
+	// uiFlagMarker.style.top=${80*(GRID_H-currentEliminationRow-1)}px;
 }
 
 
@@ -551,6 +608,10 @@ function activePlayerLeaderboardHighlight() {
 			let player = game.players.get(playerId);
 
 			if (player.position.y<currentEliminationRow){
+				// 🔊 ADDED: Lose sound when a player gets eliminated (challenge mode)
+				// Sound for losing (elimination)
+				play("lose", { volume: 0.9, restart: true });
+
 				game.removePlayerFromActiveQueue(playerId);
 			}
 		});
@@ -610,6 +671,10 @@ rollButton.addEventListener("click", ()=>{
 		if (!rollButton.classList.contains("end-turn")||!challengeCards){
 			rollButton.disabled = true;
 			diceImage.src = "../assets/images/dice-animation.gif";
+
+			// 🔊 ADDED: Dice roll sound when user clicks Roll Dice
+			// Sound for rolling dice
+			play("dice", { volume: 0.9, restart: true });
 
 			let result = diceRoll(ROLL_SIZE);
 			setTimeout(() => {

@@ -2,10 +2,10 @@ import { play } from "./sound.js";
 
 export function enableGlobalButtonSfx() {
   document.addEventListener(
-    "click",
+    "pointerdown",
     (e) => {
-      const btn = e.target.closest("button, .btn, a");
-      if (!btn) return;
+      const el = e.target.closest("button, .btn, a");
+      if (!el) return;
 
       play("button", { volume: 0.9 });
     },
