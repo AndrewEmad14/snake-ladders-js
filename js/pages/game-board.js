@@ -3,8 +3,6 @@ import { delay, diceRoll } from "../utils/utils.js";
 import { loadGameState, saveGameState } from "../utils/saving-and-loading.js";
 import Grid from "../game-logic/grid.js";
 import PortalTile from "../game-logic/tiles/portalTile.js";
-import PlayerAccountData from "../utils/PlayerAccountData.js";
-import Point from "../utils/point.js";
 import CardTile from "../game-logic/tiles/cardTile.js";
 import { allCards, nameToCardIndex } from "../game-logic/all-cards.js";
 import { enableGlobalButtonSfx } from "../utils/button-sfx.js";
@@ -16,8 +14,8 @@ import { play } from "../utils/sound.js";
 /* ADDED: Background music (BGM) */
 const bgMusic = (() => {
 	// Background music for the game-board page
-	const url = new URL("../../assets/audio/gameBG.wav", import.meta.url);
-	const a = new Audio(url);
+	const url = new window.URL("../../assets/audio/gameBG.wav", import.meta.url);
+	const a = new window.Audio(url);
 	a.preload = "auto";
 	a.loop = true;
 	a.volume = 0.18; // Background sound volume
@@ -152,7 +150,7 @@ if (challengeCards){
 		57,
 		64,67,
 		75,
-		91,92,
+		91,92,96,97
 	].forEach((target) => {
 		// add tiles after transforming 1d to 2d space
 		let pos = grid.distToPoint(target-1);
@@ -479,9 +477,9 @@ function updateEliminationFlagPosition(){
  * Card UI Changes
  *
  */
-function activePlayerPowerUps(){
+// function activePlayerPowerUps(){
 
-}
+// }
 
 
 /**
@@ -663,23 +661,7 @@ function activePlayerLeaderboardHighlight() {
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/** ----------------------------------------------------------------------------------------------
- * EVENT LISTENERS
- */
-rollButton.addEventListener("click", ()=>{
+function mainButtonPress(){
 	// Check win condition
 	//if (game.winQueue.length > 0) {return;}  // go to leaderboard
 
@@ -724,4 +706,29 @@ rollButton.addEventListener("click", ()=>{
 		toggleDescription(outcomeSection);
 	}
 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/** ----------------------------------------------------------------------------------------------
+ * EVENT LISTENERS
+ */
+rollButton.addEventListener("click", mainButtonPress);
+window.addEventListener("keypress",(event)=>{
+	if (event.key === " " || event.code === "Space" || event.code === "Enter") {
+		// Prevent the default action (e.g., scrolling the page)
+		event.preventDefault();
+		if (!rollButton.disabled){
+			mainButtonPress();
+		}
+	}
 });
