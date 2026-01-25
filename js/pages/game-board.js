@@ -26,6 +26,7 @@ const diceImage = document.getElementById("diceIcon");
 const activeTurnDisplay = document.getElementById("activeTurnPlayerName");
 const activeTurnPlayerImg= document.getElementById("activeTurnPlayerImg");
 const outcomeSection = document.getElementById("outcome");
+const uiShuffleMarker = document.getElementById("shuffleMarker");
 
 // Containers
 const leaderboardContainer = document.getElementById("playersLeaderboard");
@@ -36,7 +37,6 @@ const cardContainer = document.getElementById("card-container");
 const playerTemplate = document.getElementById("playerInfo");
 const playerMarkerTemplate = document.getElementById("playerMarker");
 const uiFlagMarker = document.getElementById("flagMarker");
-
 /**
  * UI REFERENCES (Dynamic Elements)
  * stored in arrays so we never have to use querySelector again
@@ -122,7 +122,7 @@ if (challengeCards){
 		57,
 		64,67,
 		75,
-		91,92,97,
+		91,92,
 	].forEach((target) => {
 		// add tiles after transforming 1d to 2d space
 		let pos = grid.distToPoint(target-1);
@@ -156,10 +156,6 @@ if (!startNew){
 window.localStorage.setItem("startNewGame",JSON.stringify(false));
 saveGameState(game);
 
-
-/**
- * Run Setup Script
- */
 setUpPlayers();
 addCards(); //add empty card buttons
 refreshActiveLeaderBoard();
@@ -169,14 +165,19 @@ if (challengeElimination){
 	uiFlagMarker.hidden=false;
 }
 
+if (!challengeShuffle){
+	uiShuffleMarker.style.display="none";
+}
+
 if (!challengeCards){
 	cardContainer.style.display="none";
 } else {
 	updateCardVisuals(game.current);
 }
 
-
-
+/**
+ * End of Setup Script
+ */
 
 
 
@@ -204,29 +205,48 @@ window.skip = function(n){
 	});
 };
 
-// weightedRoll cheat
+// weightedRoll cheat , not that you will have to press end turn to go to the next one
+// an obviously there is a way to automate that but i am tired T-T
 window.weightedRoll = function(n) {
 	// Check win condition
 	//if (game.winQueue.length > 0) {return;}  // go to leaderboard
 
-	rollButton.disabled = true;
-	diceImage.src = "../assets/images/dice-animation.gif";
+
+	if (!rollButton.classList.contains("active")){
+		if (!rollButton.classList.contains("end-turn")||!challengeCards){
+			rollButton.disabled = true;
+			diceImage.src = "../assets/images/dice-animation.gif";
+
+			let result = n;
+			setTimeout(() => {
+				diceImage.src = `../assets/images/dice-${result}.png`;
+
+				updatePositionsUI(result).then(()=>{
+
+					// Note: button becomes enabled after all visual effects and animations are done
+					rollButton.disabled = false;
+					if (challengeCards){
+						toggleNextTurnButton(rollButton);
+						// toggleDescription(outcomeSection);
+					} else {
+						activePlayerLeaderboardHighlight();
+					}
+				});
 
 
-	let result = n;
+			}, 1000);
 
-	setTimeout(() => {
-		diceImage.src = "../assets/images/cheat.jpeg";
-
-		updatePositionsUI(result).then(()=>{
-			//Note: button becomes enabled after update updatePositionUI is called
-
+		} else {
 			activePlayerLeaderboardHighlight();
+			toggleNextTurnButton(rollButton);
+			// toggleDescription(outcomeSection);
+		}
 
-			// Note: button becomes enabled after all visual effects and animations are done
-			rollButton.disabled = false;
-		});
-	});
+
+	} else {
+		toggleNextTurnButton(rollButton);
+		toggleDescription(outcomeSection);
+	}
 };
 
 
@@ -263,6 +283,9 @@ function setUpPlayers() {
 		// 2. Create Player Markers
 		const clonedMarkerTemplate = playerMarkerTemplate.content.cloneNode(true);
 		let clonedPlayerMarker = clonedMarkerTemplate.firstElementChild;
+		if (challengeNoOverlap){
+			clonedPlayerMarker.classList.add("dangerous");
+		}
 		clonedPlayerMarker.src=`../assets/images/Player${playerIcons[index]}-Icon.jpg`;
 
 
@@ -369,6 +392,7 @@ function goToLeaderBoard() {
 
 	// 3. Save the UPDATED data back to the browser's memory
 	window.localStorage.setItem("playerAccountData", JSON.stringify(playerAccountData));
+	window.localStorage.setItem("challengesUnlocked", JSON.stringify(true));
 	window.localStorage.setItem("startNewGame", JSON.stringify(true));
 
 	// 4. Redirect to the Leaderboard Page
